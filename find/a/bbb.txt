@@ -1,0 +1,59 @@
+DELETE FROM users WHERE name = 'Mike' ORDER BY id DESC LIMIT 6;
+
+2.
+delete from student where studentNum='200101';
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`DayOffSystem`.`leave_apply`, CONSTRAINT `leave_apply_ibfk_1` FOREIGN KEY (`studentNum`) REFERENCES `student` (`studentNum`))
+
+foreign key 
+3.
+update lesson set credit='4' where lessonNum='3';
+update lesson set credit='1' where lessonNum='4';
+update lesson set lessonName='高级语言程序设计' where lessonNum='1';
+（4） 创建学生选课视图v_stu_lesson，字段包括学号、学生姓名、课程号、课程名称、学分、任课教师工号、任课教师姓名；
+
+
+create view v_stu_lesson as
+select s.studentNum,s.studentName,l.lessonNum,l.lessonName,l.credit,
+t.teacherNum,t.teacherName
+from student s, lesson l,teacher t,stu_choose_lesson scl
+where s.studentNum=scl.studentNum and l.lessonNum=scl.lessonNum and
+l.teacherNum=t.teacherNum;
+（5） 对视图v_stu_lesson进行查询操作，查询教师号为3的老师所教授课程的学生选课信息，包含视图所有字段；
+select * from v_stu_lesson where teacherNum='3';
+
+
+（6） 对学生表、教师表、课程表、学生选课表进行联合查询操作，查询教师号为3的老师所教授课程的学生选课信息，包括学号、学生姓名、课程号、课程名称、任课教师工号、任课教师姓名；（理解视图消解机制）
+
+select s.studentNum, studentName, l.lessonNum,l.lessonName, t.teacherNum,t.teacherName
+from 
+((student s 
+inner join stu_choose_lesson scl on s.studentNum=scl.studentNum)
+inner join lesson l on l.lessonNum=scl.lessonNum) inner join teacher t on t.teacherNum=l.teacherNum
+where
+t.teacherNum='3';
+
+
+select s.studentNum, studentName, l.lessonNum,l.lessonName, l.teacherNum,t.teacherName
+from 
+((lesson l inner join teacher t on l.teacherNum=t.teacherNum)
+inner join stu_choose_lesson scl on l.lessonNum=scl.lessonNum)
+inner join student s on s.studentNum=scl.studentNum
+where l.teacherNum='3';
+
+（7） 更新视图v_stu_lesson，更新课程4的学分为3分，分析更新操作可以执行成功或失败的原因；
+
+update v_stu_lesson set credit=3 where credit=4;
+
+
+（8） 使用update语句将学生学号“200103”修改为“200130”， 能否成功修改，如果不能请分析原因。
+update student set studentNum='200130' where studentNum='200103';
+
+mysql> update student set studentNum='200130' where studentNum='200103';
+ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`DayOffSystem`.`leave_apply`, CONSTRAINT `leave_apply_ibfk_1` FOREIGN KEY (`studentNum`) REFERENCES `student` (`studentNum`))
+
+
+
+
+
+
+

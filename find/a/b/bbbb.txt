@@ -1,0 +1,111 @@
+select lessonNum
+from leave_apply
+where state='审批已通过'
+group by lessonNum
+having count(lessonNum)>=all(select count(lessonNum)
+from leave_apply 
+where state='审批已通过'
+group by lessonNum);
+
+(1)
+select lessonName,teacherName
+from lesson l, teacher t
+where l.teacherNum=t.teacherNum and l.lessonNum=(
+select lessonNum
+from leave_apply
+where state='审批已通过'
+group by lessonNum
+having count(lessonNum)>=all(select count(lessonNum)
+from leave_apply 
+where state='审批已通过'
+group by lessonNum));
+
+(3)
+
+select s.studentName 
+from student s 
+where s.studentNum not in(
+select studentNum
+from stu_choose_lesson
+where lessonNum in(select l.lessonNum
+from lesson l 
+where lessonName <>'算法设计'))
+and s.studentNum in(select scl.studentNum 
+from stu_choose_lesson scl
+where scl.lessonNum in(select l.lessonNum from lesson l
+where lessonName='算法设计'));
+
+(4)
+select studentName 
+from student 
+where studentNum in(select studentNum
+from stu_choose_lesson
+where lessonNum='1') and
+studentNum in(select studentNum
+from stu_choose_lesson
+where lessonNum='2') and
+studentNum in(select studentNum
+from stu_choose_lesson
+where lessonNum='3') and
+studentNum in(select studentNum
+from stu_choose_lesson
+where lessonNum='4');
+
+(5)
+select studentNum,studentName,IDcard
+from student
+where studentNum in(select studentNum
+from stu_choose_lesson
+where lessonNum='3');
+
+(6)
+select studentNum
+from leave_apply 
+natural join message;
+
+select l.lessonNum,l.lessonName,l.credit,l.beforeLessonNum,s.beforeLessonName,s.beforeLessonCredit
+from lesson l left join
+(select lessonNum as beforeLessonNum,lessonName as beforelessonName,credit as beforeLessonCredit
+from lesson
+where lessonNum in
+(select beforeLessonNum from lesson
+where beforeLessonNum is not null))s
+on l.beforeLessonNum=s.beforeLessonNum;
+
+
+(7)
+select l.*, m.*
+from leave_apply l
+left join message m on m.studentNum=l.studentNum;
+
+(8)
+select l.*, m.*
+from leave_apply l
+right join message m on m.studentNum=l.studentNum;
+
+(10)
+select l.lessonNum,l.lessonName,l.credit,l.beforeLessonNum, bl.beforeLessonName, bl.beforeLessonCredit
+from lesson l left join
+(select lessonName as beforeLessonName, credit as beforeLessonCredit, lessonNum as beforeLessonNum
+from lesson where lessonNum in(select beforeLessonNum from lesson
+where beforeLessonNum is not null))bl
+on l.beforeLessonNum=bl.beforeLessonNum;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

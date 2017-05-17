@@ -1,0 +1,79 @@
+create user 'user_01'@'localhost' identified by '123456';
+create user 'user_02'@'localhost' identified by '123456';
+grant create on *.* to user_01@localhost
+grant all on user_01.* to user_01@localhost;
+
+grant create on *.* to user_02@localhost
+grant all on user_02.* to user_02@localhost;
+
+flush privileges
+GRANT ALL ON *.* TO user_02@localhost
+
+
+use databases;
+create table test_01(
+name varchar(30) not null
+)
+insert into test_01 values('user_01_data');
+1.ERROR 1142 (42000): INSERT command denied to user 'user_01'@'localhost' for table 'test_01'
+create table test_02(
+name varchar(30) not null
+)
+insert into test_02 values('user_02_data');
+5.
+grant create on *.* to user_01@localhost
+
+事务
+1.
+create table bank_account(
+id int(30) not null,
+balance double(15,2) not null default '0.0'
+)engine=innoDB;
+2.
+BEGIN;
+SET AUTOCOMMIT=0;
+update student set studenNum='200204'
+where studenNum='200202'
+
+delimiter $
+create trigger us after update on student 
+for each row BEGIN
+update stu_choose_lesson set studentNum=new.studentNum where studentNum=old.studentNum;
+update leave_apply set
+studentNum=new.studentNum where studentNum=old.studentNum;
+update message set
+studentNum=new.studentNum where studentNum=old.studentNum;
+END
+$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
